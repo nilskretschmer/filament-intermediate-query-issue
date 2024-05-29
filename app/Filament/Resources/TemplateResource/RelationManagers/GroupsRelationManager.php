@@ -22,11 +22,6 @@ class GroupsRelationManager extends RelationManager
 {
     protected static string $relationship = 'groups';
 
-    public static function getTitle(Model $ownerRecord, string $pageClass): string
-    {
-        return __('templates.groups');
-    }
-
     public Template $template;
 
     public function mount(): void
@@ -50,14 +45,7 @@ class GroupsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('name')
             ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->label(__('templates.name')),
-                SelectColumn::make('role_mapping')
-                    ->label(__('globals.role_mapping'))
-                    ->options([
-                        'admins' => 'Admins',
-                        'users' => 'Users',
-                    ]),
+                Tables\Columns\TextColumn::make('name'),
             ])
             ->filters([
                 //
@@ -65,24 +53,12 @@ class GroupsRelationManager extends RelationManager
             ->headerActions([
                 AttachAction::make()
                     ->preloadRecordSelect()
-                    ->form(fn (AttachAction $action): array => [
-                        $action->getRecordSelect(),
-                        Select::make('role_mapping')
-                            ->options([
-                                'admins' => 'Admins',
-                                'users' => 'Users',
-                            ])
-                            ->required(),
-                    ])
             ])
             ->actions([
                 Action::make('permissions')
                     ->form($this->getPermissionsForm())
                     ->fillForm(function ($record) {
                         return $record->toArray();
-                    })
-                    ->modalHeading(function ($record) {
-                        return __('templates.permissions_for', ['group' => $record->name, 'template' => $this->template->name]);
                     })
                     ->model(function ($record) {
                         return $record;
@@ -110,8 +86,7 @@ class GroupsRelationManager extends RelationManager
                 )
                 ->options(function () use ($target) {
                     $permissions = [];
-                    $templatePermissions = Permission::whereNull('model_id')->where('model_type', Project::class)
-                        ->where('destination_id', $target->id)->whereIn('name', ['download', 'upload'])->get();
+                    $templatePermissions = Permission::where('destination_id', $target->id)->whereIn('name', ['download', 'upload'])->get();
                     foreach ($templatePermissions as $permission) {
                         $permissions[$permission->id] = $permission->name;
                     }

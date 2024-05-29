@@ -18,7 +18,25 @@ class PermissionFactory extends Factory
     {
         return [
             'id' => $this->faker->uuid(),
-            'name' => $this->faker->word()
+            'name' => $this->faker->word(),
         ];
+    }
+
+    public function download(): Factory
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'name' => 'download',
+            ];
+        });
+    }
+
+    public function upload(): Factory
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'name' => 'upload',
+            ];
+        });
     }
 }

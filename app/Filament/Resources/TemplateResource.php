@@ -5,25 +5,46 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\TemplateResource\Pages;
 use App\Filament\Resources\TemplateResource\RelationManagers;
 use App\Models\Template;
-use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Grid;
+
 
 class TemplateResource extends Resource
 {
     protected static ?string $model = Template::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-document';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                //
+                Grid::make(3)
+                    ->schema([
+                        Section::make()
+                            ->columnSpan(1)
+                            ->schema([
+                                TextInput::make('name')
+                                    ->string()
+                                    ->required()
+                                    ->unique()
+                                    ->maxLength(255),
+                            ]),
+                        Section::make()
+                            ->columnSpan(1)
+                            ->schema([
+                                CheckboxList::make('allowedTargets')
+                                    ->disabledOn('edit')
+                                    ->relationship(name: 'allowedTargets', titleAttribute: 'name')
+                                    ->required(),
+                            ]),
+                    ])
             ]);
     }
 
@@ -31,7 +52,12 @@ class TemplateResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('name')
+                    ->label(__('templates.name'))
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('allowedTargets.name')
+                    ->badge(),
             ])
             ->filters([
                 //
@@ -41,7 +67,7 @@ class TemplateResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    // Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -49,6 +75,7 @@ class TemplateResource extends Resource
     public static function getRelations(): array
     {
         return [
+            RelationManagers\AllowedTargetsRelationManager::class,
             RelationManagers\GroupsRelationManager::class,
         ];
     }
@@ -61,4 +88,5 @@ class TemplateResource extends Resource
             'edit' => Pages\EditTemplate::route('/{record}/edit'),
         ];
     }
+
 }

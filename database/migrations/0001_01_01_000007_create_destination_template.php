@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('destination_template', function (Blueprint $table) {
+            $table->uuid('id')->primary();
             $table->foreignUuid('template_id')
                 ->constrained()
                 ->onUpdate('cascade')

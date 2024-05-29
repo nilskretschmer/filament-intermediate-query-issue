@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Models\PermissionUser;
 use App\Models\Permission;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -14,7 +13,7 @@ use Filament\Panel;
 
 class User extends Authenticatable implements FilamentUser
 {
-    use HasUuids, HasFactory;
+    use HasFactory;
 
     protected $fillable = [
         'name',
@@ -50,5 +49,10 @@ class User extends Authenticatable implements FilamentUser
     public function canAccessPanel(Panel $panel): bool
     {
         return true;
+    }
+
+    public function getAuthPasswordName()
+    {
+        return 'password';
     }
 }
