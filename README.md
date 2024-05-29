@@ -2,7 +2,7 @@
     git clone <url>
 
 ## 2. Change into the new directory
-    cd filament-relationship-query-issue
+    cd filament-intermediate-query-issue
 
 ## 3. Install the dependencies
     docker run --rm -u "$(id -u):$(id -g)" -v $(pwd):/opt -w /opt laravelsail/php83-composer:latest composer install --ignore-platform-reqs
